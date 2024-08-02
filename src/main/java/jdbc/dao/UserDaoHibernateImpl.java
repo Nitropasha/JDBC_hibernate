@@ -21,9 +21,9 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void createUsersTable() {
-        Session session = getConnection().openSession();
 
-        try {
+
+        try (Session session = getConnection().openSession()) {
             session.beginTransaction();
             session.createNativeQuery(CREATE_TABLE).executeUpdate();
             session.getTransaction().commit();
@@ -31,8 +31,6 @@ public class UserDaoHibernateImpl implements UserDao {
         } catch (Exception e) {
 
             e.printStackTrace();
-        } finally {
-            session.close();
         }
 
     }
@@ -40,9 +38,9 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void dropUsersTable() {
-        Session session = getConnection().openSession();
-        Transaction transaction = null;
-        try {
+
+//        Transaction transaction = null;
+        try (Session session = getConnection().openSession()) {
             session.beginTransaction();
             String createTableSQL = DROP_TABLE;
             session.createNativeQuery(createTableSQL).executeUpdate();
@@ -51,16 +49,14 @@ public class UserDaoHibernateImpl implements UserDao {
         } catch (Exception e) {
 
             e.printStackTrace();
-        } finally {
-            session.close();
         }
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        Session session = getConnection().openSession();
 
-        try {
+
+        try (Session session = getConnection().openSession()) {
             session.beginTransaction();
             User user = new User(name, lastName, age);
             session.save(user);
@@ -68,15 +64,13 @@ public class UserDaoHibernateImpl implements UserDao {
             System.out.println("User saved");
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            session.close();
         }
     }
 
     @Override
     public void removeUserById(long id) {
-        Session session = getConnection().openSession();
-        try {
+
+        try (Session session = getConnection().openSession()) {
             session.beginTransaction();
             session.createQuery("delete from User where id = :userId")
                     .setParameter("userId", id)
@@ -85,58 +79,49 @@ public class UserDaoHibernateImpl implements UserDao {
             System.out.println("User deleted");
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            session.close();
         }
     }
 
     @Override
     public List<User> getAllUsers() {
-        Session session = getConnection().openSession();
+
         List<User> emps = new ArrayList<>();
-        try {
+        try (Session session = getConnection().openSession()) {
             session.beginTransaction();
             emps = session.createQuery("from User").getResultList();
-            for (User e: emps)
+            for (User e : emps)
                 System.out.println(e);
             session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
             emps = new ArrayList<>();
-        } finally {
-            session.close();
         }
         return emps;
     }
 
     public User getById(long i) {
-        Session session = getConnection().openSession();
-       User user = new User();
-        try {
+        User user = new User();
+        try (Session session = getConnection().openSession()) {
             session.beginTransaction();
             user = session.get(User.class, i);
             System.out.println("ПОЛУЧАЕМ ПОЛЬЗОВАТЕЛЬЯ ПО АЙДИ");
             session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            session.close();
         }
         return user;
     }
 
     @Override
     public void cleanUsersTable() {
-        Session session = getConnection().openSession();
-        try {
+
+        try (Session session = getConnection().openSession()) {
             session.beginTransaction();
             session.createQuery("delete from User").executeUpdate();
             session.getTransaction().commit();
             System.out.println("Table cleaned");
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            session.close();
         }
     }
 }

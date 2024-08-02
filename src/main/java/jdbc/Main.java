@@ -28,7 +28,7 @@ public class Main {
         userDao.cleanUsersTable();
         System.out.println(userDao.getAllUsers());
 
-//       userDao.dropUsersTable();
+//      userDao.dropUsersTable();
 
 
     }
